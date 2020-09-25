@@ -1,11 +1,10 @@
-from flask import Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request
 from . import db
-from .models import Blog, Announcement, User
-import bcrypt
+from .models import Blog, Announcement
 
 main = Blueprint('main', __name__)
 
-@main.route('/new_blog', methods=['POST'])
+@main.route('/new-blog', methods=['POST'])
 def add_blog():
     blog_data = request.get_json()
 
@@ -26,59 +25,31 @@ def blogs():
 
     return jsonify({'blog posts' : blogs})
 
-@main.route('/create-announcment', methods=['POST'])
-def add_announcment():
+@main.route('/new-announcement', methods=['POST'])
+def new_announcement():
+
+    old_announcement_data = Announcement.query.all()
+
     announcement_data = request.get_json()
 
-    if announcement_data == None:
-        new_announcement = Announcement(title=announcement_data['title'], content=announcement_data['content'])
-        print(new_announcement)
-
-        db.session.add(new_announcement)
+    for old_announcement in old_announcement_data:
+        db.session.delete(old_announcement)
         db.session.commit()
-    else:
-        alldata = Announcement.query.all()
 
-        for a in alldata:
-            db.session.delete(a)
+    add_announcement = Announcement(title=announcement_data['title'], content=announcement_data['content'])
 
-            new_announcement = Announcement(title=announcement_data['title'], content=announcement_data['content'])
+    db.session.add(add_announcement)
+    db.session.commit()
 
-            db.session.add(new_announcement)
-            db.session.commit()
-    return 'Done', 201
+    return "done", 201
 
-@main.route('/announcment')
-def announcment():
-    announcement_list = Announcement.query.all()
-    print(announcement_list)
-    announcement_item = []
+@main.route('/announcement', methods=['GET'])
+def get_announcment():
+    announcement_item = Announcement.query.all()
 
-    for announcement in announcement_list:
-        announcement_item.append({'title' : announcement.title, 'content' : announcement.content})
+    announcements = []
 
-    return jsonify("announcement" : announcement_item)
+    for announcement in announcement_item:
+        announcements.append({'title' : announcement.title, 'content' : announcement.content})
 
-# @main.route('/register_user', methods=['POST'])
-# def user():
-#     user_data = request.get_json()
-
-#     password = user_data['password']
-#     hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
-
-#     new_user = User(username=user_data['username'], name=user_data['name'], password=f'{hashed}')
-
-#     db.session.add(new_user)
-#     db.session.commit()
-
-#     return 'Done', 201
-
-# @main.route('/users')
-# def users():
-#     user_list = User.query.all()
-#     users = []
-
-#     for user in user_list:
-#         users.append({'title' : user.username, 'name' : user.name, 'password' : user.password})
-
-#     return jsonify({'announcments' : users})
+    return jsonify({'announcement' : announcements})

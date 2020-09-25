@@ -8,9 +8,7 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
-bcrypt = "*"
 flask-cors = "*"
-flask-login = "*"
 
 [requires]
 python_version = "3.8"

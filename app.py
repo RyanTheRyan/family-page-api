@@ -53,3 +53,6 @@ def get_announcment():
         announcements.append({'title' : announcement.title, 'content' : announcement.content})
 
     return jsonify({'announcement' : announcements})
+
+    if __name__ == '__main__':
+        main.run()

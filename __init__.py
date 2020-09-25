@@ -7,9 +7,6 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    if __name__ == '__main__':
-        app.run()
-
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
     db.init_app(app)

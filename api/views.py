@@ -8,12 +8,24 @@ main = Blueprint('main', __name__)
 def add_blog():
     blog_data = request.get_json()
 
+    new_id = Blog.query.all()
+
     new_blog = Blog(title=blog_data['title'], banner_image_url=blog_data['banner_image_url'], content=blog_data['content'], status=blog_data['status'], published_date=blog_data['published_date'])
 
     db.session.add(new_blog)
     db.session.commit()
 
     return 'Done', 201
+
+@main.route('/delete-blogs', methods=['DELETE'])
+def delete_blogs():
+    all_blogs = Blog.query.all()
+
+    for blog in all_blogs:
+        db.session.delete(blog)
+        db.session.commit()
+    return "Done"
+
 
 @main.route('/blogs', methods=['GET'])
 def blogs():
